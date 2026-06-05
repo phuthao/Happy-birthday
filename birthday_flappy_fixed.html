@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Happy Birthday Thảo Ngân</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Nunito:wght@400;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff0f5;min-height:100vh;min-height:100svh;overflow-x:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#wrap{background:#fff0f5;font-family:'Nunito',sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;min-height:100svh;width:100%;overflow-x:hidden}
+#hud{width:100%;max-width:480px;display:flex;justify-content:space-between;align-items:center;padding:12px 16px 8px}
+.hud-age{font-size:13px;color:#c2185b;font-weight:700;letter-spacing:0.05em}
+.hud-lives{font-size:16px;letter-spacing:3px;color:#f48fb1}
+#canvas-wrap{position:relative;width:100%;max-width:480px}
+canvas{display:block;width:100%;background:#fff0f5;cursor:pointer}
+#overlay,#reward-overlay,#gameover-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem}
+#overlay{background:rgba(255,240,245,0.96);overflow:auto;padding:12px}
+#gameover-overlay{background:rgba(255,240,245,0.96);display:none}
+#reward-overlay{background:rgba(255,240,245,0.97);display:none;justify-content:flex-start;overflow:auto;padding:14px 18px}
+#summary-overlay{position:absolute;inset:0;display:none;flex-direction:column;justify-content:flex-start;overflow:auto;background:rgba(255,240,245,0.98);padding:14px}
+.ov-emoji{font-size:2.2rem;margin-bottom:0.4rem}
+.start-photo{width:min(44%,150px);aspect-ratio:1/1;object-fit:cover;border-radius:50%;margin-bottom:8px;border:4px solid rgba(255,255,255,0.85);box-shadow:0 8px 24px rgba(194,24,91,0.18)}
+.ov-title{font-family:'Playfair Display',serif;font-size:1.35rem;color:#c2185b;margin-bottom:0.4rem;text-align:center}
+.ov-sub{font-size:0.82rem;color:#ad1457;text-align:center;line-height:1.6;max-width:280px;margin-bottom:1rem}
+.ov-btn{background:#e91e8c;color:#fff;border:none;padding:10px 28px;border-radius:50px;font-size:0.9rem;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;letter-spacing:0.05em;box-shadow:0 4px 16px rgba(233,30,140,0.3);transition:all 0.15s}
+.ov-btn:hover{transform:translateY(-2px)}
+.rw-photo-wrap{width:100%;max-width:310px;aspect-ratio:4/3;margin:0 auto 12px;border-radius:18px;overflow:hidden;background:#fce4ec;border:4px solid rgba(255,255,255,0.9);box-shadow:0 8px 24px rgba(194,24,91,0.18);flex:0 0 auto}
+.rw-photo{display:block;width:100%;height:100%;object-fit:cover}
+#reward-overlay .rw-age,#reward-overlay .rw-title,#reward-overlay .rw-wish{display:none}
+.rw-age{font-size:11px;color:#e91e8c;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:5px}
+.rw-title{font-family:'Playfair Display',serif;font-size:1.22rem;color:#880e4f;margin-bottom:8px;text-align:center}
+.rw-wish{font-size:0.82rem;color:#666;line-height:1.55;text-align:center;max-width:320px;margin-bottom:10px}
+.rw-coupon{border:2px dashed #f48fb1;border-radius:14px;padding:10px 14px;text-align:center;max-width:320px;width:100%;margin-bottom:12px;background:rgba(255,255,255,0.8)}
+.rw-coupon-lbl{font-size:10px;color:#e91e8c;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:5px}
+.rw-coupon-txt{font-size:0.9rem;color:#c2185b;font-weight:700;line-height:1.4}
+#summary-shell{width:min(100%,560px);margin:0 auto;background:rgba(255,255,255,0.92);border:1px solid rgba(244,143,177,0.35);border-radius:18px;box-shadow:0 10px 30px rgba(194,24,91,0.12);padding:14px}
+.sum-kicker{font-size:11px;color:#e91e8c;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-align:center;margin-bottom:4px}
+.sum-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:#880e4f;text-align:center;margin-bottom:6px}
+.sum-sub{font-size:0.82rem;color:#ad1457;text-align:center;line-height:1.5;margin-bottom:12px}
+.sum-table-wrap{overflow:auto;max-height:60vh;border:1px solid rgba(244,143,177,0.25);border-radius:14px;background:#fff}
+.sum-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.sum-table th,.sum-table td{padding:10px 10px;vertical-align:top;border-bottom:1px solid rgba(244,143,177,0.14);font-size:0.84rem}
+.sum-table th{background:#fde7ef;color:#c2185b;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;text-align:left;position:sticky;top:0;z-index:1}
+.sum-table th:nth-child(1),.sum-table td:nth-child(1){width:52px;text-align:center}
+.sum-table td{color:#4a4a4a;word-break:break-word}
+.sum-actions{display:flex;justify-content:center;margin-top:12px}
+#progress-bar-wrap{width:100%;max-width:480px;padding:6px 16px 10px}
+.pb-row{display:flex;justify-content:space-between;margin-bottom:4px}
+.pb-lbl{font-size:11px;color:#e91e8c;font-weight:700}
+.pb-track{height:6px;background:#fce4ec;border-radius:50px;overflow:hidden}
+.pb-fill{height:100%;background:linear-gradient(90deg,#f48fb1,#e91e8c);border-radius:50px;transition:width 0.4s}
+@media (max-height:620px){
+  #reward-overlay{padding:10px 14px}
+  .rw-photo-wrap{max-width:260px;margin-bottom:8px}
+  .rw-wish{line-height:1.42;margin-bottom:8px}
+  .rw-coupon{padding:8px 12px;margin-bottom:10px}
+  #summary-shell{padding:12px}
+  .sum-table th,.sum-table td{padding:8px 8px;font-size:0.78rem}
+}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="hud">
+    <div class="hud-age">THẢO NGÂN - <span id="hud-age-txt">TUỔI 1</span></div>
+    <div class="hud-lives" id="hud-lives">♥ ♥ ♥</div>
+  </div>
+  <div id="canvas-wrap">
+    <canvas id="c" height="420"></canvas>
+    <div id="overlay">
+      <div class="ov-emoji">🌸</div>
+      <img class="start-photo" src="img/0.jpg" alt="Ảnh đại diện của Thảo Ngân">
+      <div class="ov-title">Happy Birthday<br>Thảo Ngân!</div>
+      <div class="ov-sub">Bay qua khe của 25 cột mốc</div>
+            <div class="ov-title">Ai làm cũng được, miễn không phải toy là được</div>
+
+      <button class="ov-btn" onclick="startGame()">Bắt đầu ✨</button>
+    </div>
+    <div id="gameover-overlay">
+      <div class="ov-emoji">💔</div>
+      <div class="ov-title" id="go-title">Thử lại nào!</div>
+      <div class="ov-sub" id="go-sub"></div>
+      <button class="ov-btn" onclick="retryLevel()">Thử lại 🔄</button>
+    </div>
+    <div id="reward-overlay">
+      <div class="rw-photo-wrap">
+        <img class="rw-photo" id="rw-photo" src="img/1.jpg" alt="">
+      </div>
+      <div class="rw-age" id="rw-age"></div>
+      <div class="rw-title" id="rw-title"></div>
+      <div class="rw-wish" id="rw-wish"></div>
+      <div class="rw-coupon">
+        <div class="rw-coupon-lbl">🎁 Quà tặng</div>
+        <div class="rw-coupon-txt" id="rw-coupon"></div>
+      </div>
+      <button class="ov-btn" id="rw-btn" onclick="nextLevel()">Tiếp tục →</button>
+    </div>
+    <div id="summary-overlay">
+      <div id="summary-shell">
+        <div class="sum-kicker">Hoàn thành 25 / 25</div>
+        <div class="sum-title">Tổng hợp 25 coupon</div>
+        <div class="sum-sub">Xem lại toàn bộ coupon của từng step trong một bảng duy nhất.</div>
+        <div class="sum-table-wrap">
+          <table class="sum-table">
+            <thead>
+              <tr>
+                <th>Tuổi</th>
+                <th>Coupon</th>
+              </tr>
+            </thead>
+            <tbody id="summary-tbody"></tbody>
+          </table>
+        </div>
+        <div class="sum-actions">
+          <button class="ov-btn" onclick="backToStart()">Chơi lại</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="progress-bar-wrap">
+    <div class="pb-row">
+      <span class="pb-lbl">Tuổi 1</span>
+      <span class="pb-lbl" id="pb-label">0 / 25</span>
+      <span class="pb-lbl">Tuổi 25</span>
+    </div>
+    <div class="pb-track"><div class="pb-fill" id="pb-fill" style="width:0%"></div></div>
+  </div>
+</div>
+
+<script>
+const STEPS = [
+{age:1,title:"Em chào đời",wish:"08/06/2001 - Một cô bé xuất hiện và âm thầm làm cuộc sống của rất nhiều người vui hơn từ ngày đó.",coupon:"💋 Anh hun em 1 cái nè"},
+{age:2,title:"Tập đi tập nói",wish:"Bắt đầu khám phá thế giới bằng những bước chân nhỏ xíu nhưng đầy quyết tâm.",coupon:"💋 Anh hun em 2 cái nè"},
+{age:3,title:"Chuyên gia nghịch ngợm",wish:"Tuổi mà mọi thứ đều thú vị và bất cứ thứ gì cũng có thể biến thành đồ chơi.",coupon:"🍵 Làm 1 ly trà chủ nhật không ?"},
+{age:4,title:"Nhà thám hiểm nhí",wish:"Ngày nào cũng là một cuộc phiêu lưu mới, từ góc nhà tới sân trường.",coupon:"😎 Thích thì để chứ không có quà"},
+{age:5,title:"Boss nhí",wish:"Đã biết thích gì, ghét gì và đôi khi muốn cả thế giới chiều theo ý mình.",coupon:"🍳 Miễn nấu ăn nguyên tuần. Anh xử lý hết!"},
+{age:6,title:"Lớp Một",wish:"Bắt đầu hành trình đi học, làm quen với chữ cái, con số và thật nhiều bạn mới.",coupon:"🧋 Thế chôm chôm kèm trà sữa thì sao ?"},
+{age:7,title:"Siêu sao nhí",wish:"Lớn thêm một chút, tự tin thêm một chút và đáng yêu thì vẫn rất nhiều.",coupon:"🛒 1 món bất kỳ trong giỏ hàng"},
+{age:8,title:"Thế giới sắc màu",wish:"Mỗi ngày đều có thêm một sở thích mới và thêm một câu chuyện để kể.",coupon:"😎 Thần gà giá lâm !!!"},
+{age:9,title:"Sắp hai chữ số",wish:"Chuẩn bị bước sang cột mốc mới, nhưng độ dễ thương thì vẫn giữ nguyên.",coupon:"😘 Ôm 1 cái"},
+{age:10,title:"Level 10 đạt được",wish:"Hoàn thành 10 năm đầu tiên trên Trái Đất với thành tích cực kỳ xuất sắc.",coupon:"🧋 Sữa tươi cà phê nguyên tuần chắc đủ phê chứ ?"},
+{age:11,title:"Cánh cửa mới",wish:"Bạn bè mới, trải nghiệm mới và những câu chuyện đáng nhớ bắt đầu xuất hiện nhiều hơn.",coupon:"🫠 Hết mana 🥲"},
+{age:12,title:"Tuổi mộng mơ",wish:"Vẫn thích đồ ăn vặt nhưng cũng bắt đầu có những ước mơ thật lớn.",coupon:"🫠 Hết mana 🥲🥲"},
+{age:13,title:"Phiên bản nâng cấp",wish:"Thông minh hơn, cá tính hơn và bắt đầu có những bí mật của riêng mình.",coupon:"🎁 Mystery Gift"},
+{age:14,title:"Tăng cấp tài khoản",wish:"Ngày càng bản lĩnh và biết mình muốn gì hơn trước.",coupon:"🛒 1 món bất kỳ trong giỏ hàng"},
+{age:15,title:"Nửa vầng trăng",wish:"Tuổi của những dự định lớn và những kỷ niệm sẽ nhớ rất lâu về sau.",coupon:"😎 Thích thì để chứ không có quà"},
+{age:16,title:"Cô gái bản lĩnh",wish:"Không còn là cô bé ngày nào nữa, nhưng vẫn giữ được sự đáng yêu rất riêng.",coupon:"🛌 Nếu cảm thấy mệt quá"},
+{age:17,title:"Nhìn về tương lai",wish:"Bắt đầu nghĩ nhiều hơn về những nơi muốn đến và những điều muốn làm.",coupon:"🌆 Thì mình về Q7"},
+{age:18,title:"Mở khóa người lớn",wish:"Chúc mừng! Hệ thống đã cấp quyền trưởng thành kèm theo vô số trách nhiệm mới.",coupon:"🐟 Nuôi thêm tôm , ốc và trồng thêm rau"},
+{age:19,title:"Chương mới",wish:"Một hành trình mới bắt đầu với nhiều trải nghiệm và bài học thú vị.",coupon:"🎁 Mystery Gift"},
+{age:20,title:"Đôi mươi rực rỡ",wish:"Tuổi trẻ đẹp nhất là khi dám thử, dám mơ và dám sống hết mình.",coupon:"🍰 Thèm gì ăn nấy, taobao"},
+{age:21,title:"Tỏa sáng theo cách riêng",wish:"Tự tin hơn, trưởng thành hơn và ngày càng trở thành phiên bản tuyệt vời của chính mình.",coupon:"✨ Chúc em ngày càng trở thành phiên bản tuyệt vời của chính mình !"},
+{age:22,title:"Một năm đáng nhớ",wish:"Thêm nhiều trải nghiệm đẹp, thêm nhiều người thương và thêm nhiều tiếng cười.",coupon:"🌸 Xinh đẹp và Tổng đài hơn !"},
+{age:23,title:"Rực rỡ",wish:"Đủ trưởng thành để hiểu mọi thứ không hoàn hảo, đủ trẻ để vẫn tin vào điều tốt đẹp.",coupon:"🎉 Thêm nhiều trải nghiệm đẹp và thêm nhiều tiếng cười. "},
+{age:24,title:"Chuẩn bị sang trang",wish:"Một năm trước cột mốc đặc biệt. Mạnh mẽ hơn, xinh đẹp hơn và đáng yêu hơn rất nhiều.",coupon:"🚀 Chúc em thành công trên chặng đường sắp tới"},
+{age:25,title:"Quarter-Life Legend",wish:"25 năm phiên bản Thảo Ngân hoạt động cực kỳ thành công. Chúc mừng sinh nhật em ❤️",coupon:"👑 25 năm phiên bản Thảo Ngân hoạt động cực kỳ thành công. Chúc mừng sinh nhật em ❤️"}
+];
+
+
+const STEP_IMAGE_DIR='img';
+const STEP_IMAGES=Array.from({length:26},(_,i)=>`${STEP_IMAGE_DIR}/${i}.jpg`);
+STEP_IMAGES.forEach(src=>{
+  const img=new Image();
+  img.src=src;
+});
+
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+const CW=480,CH=420;
+canvas.width=CW;canvas.height=CH;
+
+const GRAVITY=0.42;
+const JUMP_VEL=-8.5;
+const PIPE_W=64;
+const PIPE_SPEED=2.2;
+const BIRD_X=90;
+const BIRD_R=14;
+const GAP_H=155;
+const GROUND_Y=CH-40;
+
+let bird,pipes,frame,state,currentAge,lives,levelCleared;
+let loopStarted=false;
+
+function initLevel(){
+  bird={y:CH/2, vy:0, angle:0};
+  pipes=[];
+  frame=0;
+  levelCleared=false;
+  state='playing';
+}
+
+function startGame(){
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('summary-overlay').style.display='none';
+  currentAge=0; lives=3;
+  updateHUD(); updatePB();
+  initLevel();
+  if(!loopStarted){
+    loopStarted=true;
+    requestAnimationFrame(loop);
+  }
+}
+
+function retryLevel(){
+  document.getElementById('gameover-overlay').style.display='none';
+  initLevel();
+}
+
+function backToStart(){
+  document.getElementById('summary-overlay').style.display='none';
+  document.getElementById('overlay').style.display='flex';
+  state='idle';
+}
+
+function nextLevel(){
+  document.getElementById('reward-overlay').style.display='none';
+  currentAge++;
+  if(currentAge>=25){
+    state='win';
+    renderSummaryTable();
+    document.getElementById('summary-overlay').style.display='flex';
+    return;
+  }
+  updateHUD(); updatePB();
+  initLevel();
+}
+
+function updateHUD(){
+  document.getElementById('hud-age-txt').textContent='TUỔI '+(currentAge+1);
+  let h='';
+  for(let i=0;i<3;i++) h+=i<lives?'♥ ':'♡ ';
+  document.getElementById('hud-lives').textContent=h.trim();
+}
+
+function updatePB(){
+  document.getElementById('pb-fill').style.width=((currentAge/25)*100)+'%';
+  document.getElementById('pb-label').textContent=currentAge+' / 25';
+}
+
+function doJump(){
+  if(state!=='playing') return;
+  bird.vy=JUMP_VEL;
+}
+
+document.addEventListener('keydown',e=>{ if(e.code==='Space'){e.preventDefault();doJump();} });
+canvas.addEventListener('touchstart',e=>{ e.preventDefault(); doJump(); },{passive:false});
+canvas.addEventListener('click',()=>doJump());
+
+function spawnPipe(){
+  const minGapY=50;
+  const maxGapY=GROUND_Y-GAP_H-50;
+  const gapY=minGapY+Math.random()*(maxGapY-minGapY);
+  pipes.push({x:CW+10, gapY, passed:false});
+}
+
+function checkHit(){
+  const bx=BIRD_X, by=bird.y, r=BIRD_R-3;
+  if(by-r<=2) return true;
+  if(by+r>=GROUND_Y) return true;
+  for(const p of pipes){
+    const px=p.x;
+    if(bx+r>px && bx-r<px+PIPE_W){
+      if(by-r<p.gapY || by+r>p.gapY+GAP_H) return true;
+    }
+  }
+  return false;
+}
+
+let deadFrames=0;
+let deadBirdY=0;
+let deadBirdVY=0;
+
+function triggerDeath(){
+  state='dead';
+  deadFrames=0;
+  deadBirdY=bird.y;
+  deadBirdVY=2;
+}
+
+function triggerGameOver(){
+  document.getElementById('go-title').textContent= lives<=0 ? 'Game over!' : 'Thử lại nào!';
+  document.getElementById('go-sub').textContent= lives<=0
+    ? 'Mất hết mạng rồi, thử lại tuổi '+STEPS[currentAge].age+' nhé'
+    : 'Còn '+lives+' mạng - bay tiếp tuổi '+STEPS[currentAge].age+' thôi!';
+  document.getElementById('gameover-overlay').style.display='flex';
+  state='gameover';
+}
+
+function showReward(){
+  const s=STEPS[currentAge];
+  const photo=document.getElementById('rw-photo');
+  photo.src=STEP_IMAGES[s.age];
+  photo.alt='Ảnh tuổi '+s.age+' của Thảo Ngân';
+  document.getElementById('rw-age').textContent='Tuổi '+s.age+' - 08/06/'+(2000+s.age);
+  document.getElementById('rw-title').textContent=s.title;
+  document.getElementById('rw-wish').textContent=s.wish;
+  document.getElementById('rw-coupon').textContent=s.coupon;
+  document.getElementById('rw-btn').textContent=currentAge<24?'Tiếp tục →':'Hoàn thành ★';
+  document.getElementById('reward-overlay').style.display='flex';
+  state='reward';
+}
+
+function renderSummaryTable(){
+  const tbody=document.getElementById('summary-tbody');
+  tbody.innerHTML='';
+  for(const step of STEPS){
+    const tr=document.createElement('tr');
+    const tdAge=document.createElement('td');
+    const tdCoupon=document.createElement('td');
+    tdAge.textContent=step.age;
+    tdCoupon.textContent=step.coupon || '';
+    tr.appendChild(tdAge);
+    tr.appendChild(tdCoupon);
+    tbody.appendChild(tr);
+  }
+}
+
+function loop(){
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+function update(){
+  if(state==='playing'){
+    frame++;
+    bird.vy+=GRAVITY;
+    bird.y+=bird.vy;
+    bird.angle=Math.max(-0.45,Math.min(Math.PI/2,bird.vy*0.065));
+
+    if(frame===1) spawnPipe();
+    if(frame%100===0) spawnPipe();
+
+    for(const p of pipes){
+      p.x-=PIPE_SPEED;
+      if(!p.passed && p.x+PIPE_W < BIRD_X){
+        p.passed=true;
+        if(!levelCleared){
+          levelCleared=true;
+          setTimeout(()=>showReward(),200);
+          return;
+        }
+      }
+    }
+    pipes=pipes.filter(p=>p.x>-PIPE_W-10);
+
+    if(checkHit()) triggerDeath();
+  }
+  else if(state==='dead'){
+    deadFrames++;
+    deadBirdVY+=0.5;
+    deadBirdY+=deadBirdVY;
+
+    for(const p of pipes) p.x-=PIPE_SPEED*0.3;
+
+    if(deadFrames>55){
+      lives--;
+      if(lives<0) lives=0;
+      updateHUD();
+      pipes=[];
+      frame=0;
+      levelCleared=false;
+      triggerGameOver();
+    }
+  }
+}
+
+function draw(){
+  ctx.clearRect(0,0,CW,CH);
+
+  const grad=ctx.createLinearGradient(0,0,0,CH);
+  grad.addColorStop(0,'#fff0f5');
+  grad.addColorStop(1,'#ffe4f0');
+  ctx.fillStyle=grad;
+  ctx.fillRect(0,0,CW,CH);
+
+  for(let i=0;i<18;i++){
+    const bx=((i*73+(state==='playing'?frame:0)*0.4)%CW+CW)%CW;
+    const by=30+(i*53)%(CH-80);
+    ctx.fillStyle='rgba(244,143,177,0.12)';
+    ctx.beginPath();ctx.arc(bx,by,3+i%3,0,Math.PI*2);ctx.fill();
+  }
+
+  for(const p of pipes) drawPipe(p);
+
+  ctx.fillStyle='#f8bbd0';
+  ctx.fillRect(0,GROUND_Y,CW,CH-GROUND_Y);
+  ctx.fillStyle='#f48fb1';
+  ctx.fillRect(0,GROUND_Y,CW,3);
+
+  if(state==='dead'){
+    drawBirdAt(BIRD_X, deadBirdY, Math.PI/2, true);
+  } else if(state==='playing'){
+    drawBirdAt(BIRD_X, bird.y, bird.angle, false);
+  } else if(state==='win'){
+    drawWin();
+  } else if(bird){
+    drawBirdAt(BIRD_X, bird.y, 0, false);
+  }
+
+  if(state==='playing'){
+    ctx.fillStyle='rgba(194,24,91,0.65)';
+    ctx.font='700 12px Nunito';
+    ctx.textAlign='left';
+    ctx.fillText('Tuổi '+(currentAge+1)+' / 25',12,22);
+  }
+}
+
+function drawPipe(p){
+  const topH=p.gapY;
+  const botY=p.gapY+GAP_H;
+  const botH=GROUND_Y-botY;
+
+  ctx.fillStyle='#f06292';
+  rrect(p.x,0,PIPE_W,topH,6);
+  ctx.fillStyle='#e91e8c';
+  ctx.fillRect(p.x-6,topH-20,PIPE_W+12,20);
+
+  ctx.fillStyle='#f06292';
+  rrect(p.x,botY,PIPE_W,botH,6);
+  ctx.fillStyle='#e91e8c';
+  ctx.fillRect(p.x-6,botY,PIPE_W+12,20);
+
+  ctx.fillStyle='rgba(255,255,255,0.18)';
+  ctx.fillRect(p.x+8,0,7,topH-20);
+  ctx.fillRect(p.x+8,botY+20,7,Math.max(0,botH-20));
+
+  const midY=p.gapY+GAP_H/2;
+  ctx.fillStyle='rgba(136,14,79,0.9)';
+  ctx.font='bold 13px Nunito';
+  ctx.textAlign='center';
+  ctx.fillText(STEPS[currentAge].age, p.x+PIPE_W/2, midY+5);
+}
+
+function rrect(x,y,w,h,r){
+  if(h<=0)return;
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y);
+  ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r);
+  ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h);
+  ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r);
+  ctx.arcTo(x,y,x+r,y,r);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawBirdAt(x,y,angle,dead){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.rotate(angle);
+  ctx.fillStyle=dead?'#e91e8c':'#c2185b';
+  ctx.beginPath();ctx.arc(0,0,BIRD_R,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.9)';
+  ctx.font='15px serif';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('🌸',0,1);
+  ctx.restore();
+}
+
+function drawWin(){
+  const g=ctx.createLinearGradient(0,0,0,CH);
+  g.addColorStop(0,'#fff0f5');g.addColorStop(1,'#ffd6e8');
+  ctx.fillStyle=g;ctx.fillRect(0,0,CW,CH);
+  ctx.fillStyle='#c2185b';
+  ctx.font='bold 26px Playfair Display';
+  ctx.textAlign='center';
+  ctx.fillText('Happy Birthday',CW/2,CH/2-30);
+  ctx.fillStyle='#e91e8c';
+  ctx.font='bold 30px Playfair Display';
+  ctx.fillText('Thảo Ngân 🌸',CW/2,CH/2+10);
+  ctx.fillStyle='#ad1457';
+  ctx.font='14px Nunito';
+  ctx.fillText('08 / 06 / 2001  -  25 tuổi',CW/2,CH/2+48);
+  document.getElementById('pb-fill').style.width='100%';
+  document.getElementById('pb-label').textContent='25 / 25 ✓';
+}
+</script>
+</body>
+</html>
