@@ -7,56 +7,86 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Nunito:wght@400;600;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#fff0f5;min-height:100vh;min-height:100svh;overflow-x:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-#wrap{background:#fff0f5;font-family:'Nunito',sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;min-height:100svh;width:100%;overflow-x:hidden}
-#hud{width:100%;max-width:480px;display:flex;justify-content:space-between;align-items:center;padding:12px 16px 8px}
+body{background:#fff0f5;height:100vh;height:100svh;overflow:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#wrap{background:#fff0f5;font-family:'Nunito',sans-serif;display:flex;flex-direction:column;align-items:center;height:100vh;height:100svh;width:100%;overflow:hidden}
+#hud{width:100%;max-width:min(100vw,480px);display:flex;justify-content:space-between;align-items:center;padding:12px 16px 8px}
 .hud-age{font-size:13px;color:#c2185b;font-weight:700;letter-spacing:0.05em}
 .hud-lives{font-size:16px;letter-spacing:3px;color:#f48fb1}
-#canvas-wrap{position:relative;width:100%;max-width:480px}
-canvas{display:block;width:100%;background:#fff0f5;cursor:pointer}
+#canvas-wrap{position:relative;width:100%;max-width:min(100vw,480px);flex:1;min-height:0}
+canvas{display:block;width:100%;height:100%;background:#fff0f5;cursor:pointer}
 #overlay,#reward-overlay,#gameover-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem}
-#overlay{background:rgba(255,240,245,0.96);overflow:auto;padding:12px}
+#overlay{background:rgba(255,240,245,0.96);overflow:hidden;padding:12px}
 #gameover-overlay{background:rgba(255,240,245,0.96);display:none}
-#reward-overlay{background:rgba(255,240,245,0.97);display:none;justify-content:flex-start;overflow:auto;padding:14px 18px}
-#summary-overlay{position:absolute;inset:0;display:none;flex-direction:column;justify-content:flex-start;overflow:auto;background:rgba(255,240,245,0.98);padding:14px}
+#reward-overlay{background:rgba(255,240,245,0.97);display:none;justify-content:center;overflow:hidden;padding:10px 14px}
+#summary-overlay{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;overflow:hidden;background:rgba(255,240,245,0.98);padding:10px}
 .ov-emoji{font-size:2.2rem;margin-bottom:0.4rem}
 .start-photo{width:min(44%,150px);aspect-ratio:1/1;object-fit:cover;border-radius:50%;margin-bottom:8px;border:4px solid rgba(255,255,255,0.85);box-shadow:0 8px 24px rgba(194,24,91,0.18)}
 .ov-title{font-family:'Playfair Display',serif;font-size:1.35rem;color:#c2185b;margin-bottom:0.4rem;text-align:center}
 .ov-sub{font-size:0.82rem;color:#ad1457;text-align:center;line-height:1.6;max-width:280px;margin-bottom:1rem}
-.ov-btn{background:#e91e8c;color:#fff;border:none;padding:10px 28px;border-radius:50px;font-size:0.9rem;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;letter-spacing:0.05em;box-shadow:0 4px 16px rgba(233,30,140,0.3);transition:all 0.15s}
+.ov-btn{background:#e91e8c;color:#fff;border:none;padding:8px 24px;border-radius:50px;font-size:0.85rem;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;letter-spacing:0.05em;box-shadow:0 4px 16px rgba(233,30,140,0.3);transition:all 0.15s}
 .ov-btn:hover{transform:translateY(-2px)}
-.rw-photo-wrap{width:100%;max-width:310px;aspect-ratio:4/3;margin:0 auto 12px;border-radius:18px;overflow:hidden;background:#fce4ec;border:4px solid rgba(255,255,255,0.9);box-shadow:0 8px 24px rgba(194,24,91,0.18);flex:0 0 auto}
-.rw-photo{display:block;width:100%;height:100%;object-fit:cover}
+.rw-photo-wrap{width:auto;max-width:min(85vw,320px);max-height:45vh;margin:0 auto 10px;border-radius:14px;overflow:hidden;background:#fce4ec;border:3px solid rgba(255,255,255,0.9);box-shadow:0 6px 20px rgba(194,24,91,0.15);flex:0 0 auto}
+.rw-photo{display:block;width:100%;height:100%;max-height:45vh;object-fit:contain}
 #reward-overlay .rw-age,#reward-overlay .rw-title,#reward-overlay .rw-wish{display:none}
 .rw-age{font-size:11px;color:#e91e8c;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:5px}
 .rw-title{font-family:'Playfair Display',serif;font-size:1.22rem;color:#880e4f;margin-bottom:8px;text-align:center}
 .rw-wish{font-size:0.82rem;color:#666;line-height:1.55;text-align:center;max-width:320px;margin-bottom:10px}
-.rw-coupon{border:2px dashed #f48fb1;border-radius:14px;padding:10px 14px;text-align:center;max-width:320px;width:100%;margin-bottom:12px;background:rgba(255,255,255,0.8)}
+.rw-coupon{border:2px dashed #f48fb1;border-radius:12px;padding:8px 12px;text-align:center;max-width:300px;width:100%;margin-bottom:8px;background:rgba(255,255,255,0.8)}
 .rw-coupon-lbl{font-size:10px;color:#e91e8c;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:5px}
 .rw-coupon-txt{font-size:0.9rem;color:#c2185b;font-weight:700;line-height:1.4}
 #summary-shell{width:min(100%,560px);margin:0 auto;background:rgba(255,255,255,0.92);border:1px solid rgba(244,143,177,0.35);border-radius:18px;box-shadow:0 10px 30px rgba(194,24,91,0.12);padding:14px}
 .sum-kicker{font-size:11px;color:#e91e8c;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-align:center;margin-bottom:4px}
 .sum-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:#880e4f;text-align:center;margin-bottom:6px}
 .sum-sub{font-size:0.82rem;color:#ad1457;text-align:center;line-height:1.5;margin-bottom:12px}
-.sum-table-wrap{overflow:auto;max-height:60vh;border:1px solid rgba(244,143,177,0.25);border-radius:14px;background:#fff}
+.sum-table-wrap{overflow:auto;max-height:50vh;border:1px solid rgba(244,143,177,0.25);border-radius:14px;background:#fff}
 .sum-table{width:100%;border-collapse:collapse;table-layout:fixed}
 .sum-table th,.sum-table td{padding:10px 10px;vertical-align:top;border-bottom:1px solid rgba(244,143,177,0.14);font-size:0.84rem}
 .sum-table th{background:#fde7ef;color:#c2185b;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;text-align:left;position:sticky;top:0;z-index:1}
 .sum-table th:nth-child(1),.sum-table td:nth-child(1){width:52px;text-align:center}
 .sum-table td{color:#4a4a4a;word-break:break-word}
 .sum-actions{display:flex;justify-content:center;margin-top:12px}
-#progress-bar-wrap{width:100%;max-width:480px;padding:6px 16px 10px}
+#progress-bar-wrap{width:100%;max-width:min(100vw,480px);padding:6px 16px 10px}
 .pb-row{display:flex;justify-content:space-between;margin-bottom:4px}
 .pb-lbl{font-size:11px;color:#e91e8c;font-weight:700}
 .pb-track{height:6px;background:#fce4ec;border-radius:50px;overflow:hidden}
 .pb-fill{height:100%;background:linear-gradient(90deg,#f48fb1,#e91e8c);border-radius:50px;transition:width 0.4s}
-@media (max-height:620px){
-  #reward-overlay{padding:10px 14px}
-  .rw-photo-wrap{max-width:260px;margin-bottom:8px}
-  .rw-wish{line-height:1.42;margin-bottom:8px}
-  .rw-coupon{padding:8px 12px;margin-bottom:10px}
-  #summary-shell{padding:12px}
-  .sum-table th,.sum-table td{padding:8px 8px;font-size:0.78rem}
+@media (max-height:700px){
+  #hud{padding:6px 12px 4px}
+  .hud-age{font-size:11px}
+  .hud-lives{font-size:13px}
+  #reward-overlay{padding:8px 12px}
+  .rw-photo-wrap{max-height:38vh;max-width:min(80vw,280px);margin-bottom:6px;border-radius:12px}
+  .rw-photo{max-height:38vh}
+  .rw-coupon{padding:6px 10px;margin-bottom:6px;border-radius:10px}
+  .rw-coupon-lbl{font-size:9px;margin-bottom:3px}
+  .rw-coupon-txt{font-size:0.8rem}
+  .ov-btn{padding:7px 20px;font-size:0.8rem}
+  #progress-bar-wrap{padding:4px 12px 6px}
+  .pb-lbl{font-size:10px}
+  #summary-shell{padding:10px}
+  .sum-kicker{font-size:10px}
+  .sum-title{font-size:1.2rem;margin-bottom:4px}
+  .sum-sub{font-size:0.75rem;margin-bottom:8px}
+  .sum-table-wrap{max-height:45vh}
+  .sum-table th,.sum-table td{padding:6px 6px;font-size:0.72rem}
+}
+@media (max-width:480px){
+  #wrap{padding:0}
+  #hud{padding:6px 10px 4px}
+  .hud-age{font-size:11px}
+  .hud-lives{font-size:13px}
+  #overlay{padding:8px}
+  .ov-emoji{font-size:1.8rem;margin-bottom:0.3rem}
+  .start-photo{width:min(35%,100px)}
+  .ov-title{font-size:1.1rem}
+  .ov-sub{font-size:0.75rem;max-width:90%;margin-bottom:0.8rem}
+  #reward-overlay{padding:8px 10px}
+  .rw-photo-wrap{max-width:min(88vw,300px);max-height:40vh}
+  .rw-photo{max-height:40vh}
+  .rw-coupon{max-width:92%;padding:6px 10px}
+  .rw-coupon-txt{font-size:0.8rem}
+  #progress-bar-wrap{padding:4px 10px 6px}
+  .pb-lbl{font-size:9px}
 }
 </style>
 </head>
@@ -72,8 +102,6 @@ canvas{display:block;width:100%;background:#fff0f5;cursor:pointer}
       <div class="ov-emoji">🌸</div>
       <img class="start-photo" src="img/0.jpg" alt="Ảnh đại diện của Thảo Ngân">
       <div class="ov-title">Happy Birthday<br>Thảo Ngân!</div>
-      <div class="ov-sub">Bay qua khe của 25 cột mốc</div>
-            <div class="ov-title">Ai làm cũng được, miễn không phải toy là được</div>
 
       <button class="ov-btn" onclick="startGame()">Bắt đầu ✨</button>
     </div>
